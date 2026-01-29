@@ -43,7 +43,7 @@ function App() {
   const cleanupFiles = async () => {
     if (!currentFilename) return; 
     try {
-      await axios.post('http://localhost:5000/cleanup', {
+      await axios.post('https://mahendra284des-silajur-api.hf.space/cleanup', {
         filename: currentFilename,
         result_filename: currentResultFilename
       });
@@ -128,7 +128,7 @@ function App() {
 
     try {
       setDamageStatus("Sedang menganalisa...");
-      const response = await axios.post('http://localhost:5000/upload', formDataUpload, {
+      const response = await axios.post('https://mahendra284des-silajur-api.hf.space/upload', formDataUpload, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
