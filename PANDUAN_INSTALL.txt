@@ -1,0 +1,96 @@
+📖 PANDUAN INSTALASI APLIKASI SILAJUR
+Halo! Berikut adalah langkah-langkah menjalankan aplikasi ini dari nol. Ikuti pelan-pelan ya.
+
+TAHAP 1: DOWNLOAD ALAT PERANG (Wajib Install Dulu)
+Sebelum membuka aplikasinya, pastikan laptopmu sudah terinstall 3 aplikasi ini. Kalau belum, download dan install dulu:
+
+Python (Untuk menjalankan otak/backend aplikasi)
+
+Download di sini: https://www.python.org/downloads/
+
+⚠️ PENTING SAAT INSTALL: Centang kotak "Add Python to PATH" di bagian bawah installer sebelum klik Install. Kalau lupa, aplikasi tidak akan jalan.
+
+Node.js (Untuk menjalankan tampilan website)
+
+Download di sini: https://nodejs.org/en (Pilih yang versi LTS / Recommended).
+
+Install seperti biasa (Next > Next > Finish).
+
+VS Code (Aplikasi untuk membuka kodenya)
+
+Download di sini: https://code.visualstudio.com/
+
+TAHAP 2: PERSIAPAN FOLDER
+Download folder proyek ini (dari GitHub/Drive).
+
+Jika bentuknya .zip, Ekstrak dulu (Klik kanan > Extract Here).
+
+Buka VS Code.
+
+Pilih menu File > Open Folder.
+
+Pilih folder utama proyek ini (Folder yang di dalamnya ada folder backend dan folder silajur).
+
+TAHAP 3: INSTALL BACKEND (OTAK APLIKASI)
+Kita perlu menginstall "otak" AI-nya dulu.
+
+Di VS Code, buka Terminal baru: Klik menu Terminal > New Terminal.
+
+Masuk ke folder backend dengan ketik perintah ini lalu tekan Enter:
+
+Bash
+cd backend
+Install library yang dibutuhkan dengan ketik perintah ini lalu Enter (Pastikan ada internet):
+
+Bash
+pip install -r requirements.txt
+(Tunggu sampai proses download selesai dan berhenti bergerak).
+
+TAHAP 4: INSTALL FRONTEND (TAMPILAN WEB)
+Sekarang kita install tampilan websitenya.
+
+Buka tab Terminal BARU (Klik tanda + di pojok kanan terminal VS Code), jadi sekarang ada 2 terminal.
+
+Di terminal baru ini, ketik perintah ini untuk masuk ke folder tampilan:
+
+Bash
+cd silajur
+(Catatan: Sesuaikan silajur dengan nama folder react-mu jika beda).
+
+Install modul website dengan ketik:
+
+Bash
+npm install
+(Tunggu agak lama sampai selesai. Ini akan otomatis membuat folder node_modules yang hilang).
+
+TAHAP 5: MENJALANKAN APLIKASI (GAS!)
+Setiap kali mau menyalakan aplikasi, kamu harus melakukan ini:
+
+Langkah 1: Nyalakan Backend (Python)
+
+Pastikan kamu ada di terminal yang posisinya di folder backend.
+
+Ketik:
+
+Bash
+python app.py
+Jika muncul tulisan Running on http://127.0.0.1:5000, berarti backend SUKSES. Jangan tutup terminal ini.
+
+Langkah 2: Nyalakan Frontend (Website)
+
+Pindah ke terminal kedua yang posisinya di folder silajur.
+
+Ketik:
+
+Bash
+npm start
+Tunggu sebentar, browser (Chrome/Edge) akan otomatis terbuka dan menampilkan Website SILAJUR.
+
+Selesai! Aplikasi siap digunakan.
+
+❓ TROUBLESHOOTING (JIKA ERROR)
+Error: "python is not recognized": Berarti saat install Python tadi lupa centang "Add to PATH". Install ulang Python-nya.
+
+Website Tampil tapi Deteksi Gagal: Cek terminal Backend (Python). Apakah tertutup? Backend harus selalu nyala agar deteksi bisa jalan.
+
+Peta Tidak Muncul: Pastikan laptop connect internet (karena peta mengambil data online).
