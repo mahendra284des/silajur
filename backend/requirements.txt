@@ -1,5 +1,11 @@
-flask
+Flask
 flask-cors
 ultralytics
-opencv-python
+gunicorn
+opencv-python-headless
 werkzeug
+numpy
+pillow
+requests
+torch
+torchvision

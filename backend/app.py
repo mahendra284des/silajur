@@ -7,14 +7,16 @@ from ultralytics import YOLO
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app)
+CORS(app) # Mengizinkan akses dari semua domain (termasuk Vercel)
 
 # --- KONFIGURASI ---
+# Gunakan folder sementara agar lebih aman di cloud
 UPLOAD_FOLDER = 'uploads'
 RESULT_FOLDER = 'results'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULT_FOLDER, exist_ok=True)
 
+# Pastikan model best.pt ada di folder yang sama dengan app.py
 model = YOLO("best.pt") 
 
 # --- GENERATOR STREAMING ---
@@ -32,19 +34,20 @@ def generate_frames(path_x):
             
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-            # Jeda dikit biar CPU napas
-            time.sleep(0.01)
+            time.sleep(0.01) # Jeda dikit biar CPU server gak jebol
     except Exception as e:
         print(f"Stream ended/error: {e}")
     finally:
-        # PENTING: Lepas video segera setelah stream putus
         cap.release()
 
 def process_image(filepath, filename):
     img = cv2.imread(filepath)
     results = model(img)
-    res_plotted = results[0].plot()
+    # res_plotted = results[0].plot() # Default plot
     
+    # Custom Plot (Opsional: biar lebih rapi)
+    res_plotted = results[0].plot()
+
     save_path = os.path.join(RESULT_FOLDER, "res_" + filename)
     cv2.imwrite(save_path, res_plotted)
     
@@ -61,9 +64,13 @@ def upload_file():
     
     file_ext = filename.lower().split('.')[-1]
     
+    # --- PERBAIKAN PENTING: Ganti localhost dengan request.host_url ---
+    base_url = request.host_url.rstrip('/') 
+    # Hasilnya nanti otomatis: https://nama-render-kamu.onrender.com
+    
     if file_ext in ['mp4', 'avi', 'mov', 'mkv', 'webm']:
         return jsonify({
-            'result_url': f"http://localhost:5000/video_feed/{filename}",
+            'result_url': f"{base_url}/video_feed/{filename}",
             'filename': filename,
             'status': "Sedang Menganalisa Video...",
             'type': 'video_stream'
@@ -71,40 +78,30 @@ def upload_file():
     else:
         result_filename, status = process_image(filepath, filename)
         return jsonify({
-            'result_url': f"http://localhost:5000/results/{result_filename}",
+            'result_url': f"{base_url}/results/{result_filename}",
             'filename': filename,
             'result_filename': result_filename,
             'status': status,
             'type': 'image'
         })
 
-# --- CLEANUP DENGAN RETRY (SOLUSI VIDEO TIDAK BISA DIHAPUS) ---
 @app.route('/cleanup', methods=['POST'])
 def cleanup_file():
     data = request.json
     filename = data.get('filename')
     result_filename = data.get('result_filename')
     
-    # Fungsi pembantu untuk menghapus file bandel
     def force_delete(file_path):
         if not os.path.exists(file_path): return
-        
-        # Coba hapus sampai 10 kali (total 1 detik)
-        for i in range(10):
+        for i in range(5): # Kurangi retry jadi 5 kali biar cepet
             try:
                 os.remove(file_path)
-                print(f"Berhasil dihapus: {file_path}")
                 return
-            except PermissionError:
-                # Kalau masih dikunci Python, tunggu 0.1 detik lalu coba lagi
+            except Exception:
                 time.sleep(0.1)
-            except Exception as e:
-                print(f"Error lain: {e}")
-                return
 
     if filename:
         force_delete(os.path.join(UPLOAD_FOLDER, filename))
-        
     if result_filename:
         force_delete(os.path.join(RESULT_FOLDER, result_filename))
                 
@@ -120,4 +117,5 @@ def result_file(filename):
     return send_from_directory(RESULT_FOLDER, filename)
 
 if __name__ == '__main__':
+    # Threaded=True penting untuk performa streaming
     app.run(debug=True, port=5000, threaded=True)
